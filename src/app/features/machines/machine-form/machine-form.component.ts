@@ -10,6 +10,7 @@ import { Machine, MachineStatus } from '../../../core/models/machine.model';
 
 @Component({
   selector: 'app-machine-form',
+  standalone: true,
   imports: [ CommonModule, ReactiveFormsModule ],
   templateUrl: './machine-form.component.html',
   styleUrl: './machine-form.component.scss'

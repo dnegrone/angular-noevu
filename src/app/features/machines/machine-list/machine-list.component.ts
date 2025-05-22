@@ -9,6 +9,7 @@ import { sign } from 'crypto';
 
 @Component({
   selector: 'app-machine-list',
+  standalone: true,
   imports: [ CommonModule, RouterLink, FormsModule ],
   templateUrl: './machine-list.component.html',
   styleUrl: './machine-list.component.scss'
