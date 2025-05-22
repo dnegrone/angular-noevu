@@ -12,14 +12,17 @@ export class ApiService {
   private apiUrl: string = "http://ng-demo-api.opten.io/api/machines";
 
   private _machines = signal<Machine[]>([]);
-  readonly machines: WritableSignal<Machine[]> = this._machines
+  public readonly machines: WritableSignal<Machine[]> = this._machines;
 
   constructor(private http: HttpClient) { }
   
   // get all machines
   getMachines(): Observable<Machine[]> {
     return this.http.get<Machine[]>(this.apiUrl).pipe(
-      tap(data => this._machines.set(data)),
+      tap(data => {
+        this._machines.set(data);
+        console.log('API Service: Machines fetched and signal updated.', data);
+      }),
       catchError(this.handleError)
     );
   }
