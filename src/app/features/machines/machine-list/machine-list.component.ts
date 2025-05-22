@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from "@angular/forms";
 
 import { ApiService } from '../../../core/services/api.service';
 import { Machine, MachineStatus } from '../../../core/models/machine.model';
 import { sign } from 'crypto';
+import { SpinnerComponent } from "../../../shared/spinner/spinner.component";
 
 @Component({
   selector: 'app-machine-list',
   standalone: true,
-  imports: [ CommonModule, RouterLink, FormsModule ],
+  imports: [CommonModule, RouterLink, FormsModule, SpinnerComponent],
   templateUrl: './machine-list.component.html',
   styleUrl: './machine-list.component.scss'
 })
@@ -36,6 +37,7 @@ export class MachineListComponent implements OnInit {
   totalPages = computed(() => Math.ceil(this.filteredMachines().length / this.itemsPerPage()));
 
   public MachineStatus = MachineStatus;
+  public isLoading = inject(ApiService).isLoading;
 
   constructor(private apiService: ApiService, private router: Router) { }
 
@@ -77,9 +79,4 @@ export class MachineListComponent implements OnInit {
       this.currentPage.set(page);
     }
   }
-
-  trackByMachineId(index: number, machine: Machine): string {
-    return machine.id;
-  }
-
 }

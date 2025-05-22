@@ -7,11 +7,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { ApiService } from '../../../core/services/api.service';
 import { Machine, MachineStatus } from '../../../core/models/machine.model';
+import { SpinnerComponent } from '../../../shared/spinner/spinner.component';
 
 @Component({
   selector: 'app-machine-form',
   standalone: true,
-  imports: [ CommonModule, ReactiveFormsModule ],
+  imports: [ CommonModule, ReactiveFormsModule, SpinnerComponent ],
   templateUrl: './machine-form.component.html',
   styleUrl: './machine-form.component.scss'
 })
@@ -26,6 +27,7 @@ export class MachineFormComponent implements OnInit {
   private apiService = inject(ApiService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  public isLoading = this.apiService.isLoading;
 
   ngOnInit(): void {
     this.initForm();

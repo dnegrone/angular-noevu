@@ -1,5 +1,5 @@
 // src/app/features/machines/machine-details/machine-details.component.ts
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
@@ -7,17 +7,19 @@ import { EMPTY } from 'rxjs';
 
 import { ApiService } from '../../../core/services/api.service';
 import { Machine, MachineStatus } from '../../../core/models/machine.model';
+import { SpinnerComponent } from "../../../shared/spinner/spinner.component";
 
 @Component({
   selector: 'app-machine-details',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, SpinnerComponent],
   templateUrl: './machine-details.component.html',
   styleUrl: './machine-details.component.scss'
 })
 export class MachineDetailsComponent implements OnInit {
   machine = signal<Machine | null>(null);
   public MachineStatus = MachineStatus;
+  public isLoading = inject(ApiService).isLoading;
   
   constructor(
     private route: ActivatedRoute,

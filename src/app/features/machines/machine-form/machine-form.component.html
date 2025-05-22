@@ -1,239 +1,251 @@
 <div class="container mx-auto p-4">
-  <h2 class="text-3xl font-bold mb-6 text-gray-800">
-    {{ isEditMode() ? 'Edit Machine' : 'Add New Machine' }}
-  </h2>
 
-  <form [formGroup]="machineForm" (ngSubmit)="onSubmit()" class="bg-white shadow-lg rounded-lg p-6">
-    <div class="mb-4" *ngIf="isEditMode()">
-      <label for="id" class="block text-sm font-medium text-gray-700">Machine ID</label>
-      <input
-        type="text"
-        id="id"
-        formControlName="id"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 cursor-not-allowed"
-        readonly
-      />
+  @if(isLoading()) {
+    <div class="flex justify-center items-center py-8">
+      <app-spinner></app-spinner>
     </div>
+  }
+  @else {
+    <h2 class="text-3xl font-bold mb-6 text-gray-800">
+      {{ isEditMode() ? 'Edit Machine' : 'Add New Machine' }}
+    </h2>
 
-    <fieldset class="border p-4 rounded-md mb-6">
-      <legend class="text-lg font-semibold text-gray-800">General Information</legend>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <form [formGroup]="machineForm" (ngSubmit)="onSubmit()" class="bg-white shadow-lg rounded-lg p-6">
+      @if(isEditMode()) {
         <div class="mb-4">
-          <label for="name" class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
+          <label for="id" class="block text-sm font-medium text-gray-700">Machine ID</label>
           <input
             type="text"
-            id="name"
-            formControlName="name"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            [ngClass]="{'border-red-500': hasError('name', 'required')}"
+            id="id"
+            formControlName="id"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 cursor-not-allowed"
+            readonly
           />
-          <div *ngIf="hasError('name', 'required')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('name') }}
-          </div>
         </div>
+      }
 
-        <div class="mb-4">
-          <label for="status" class="block text-sm font-medium text-gray-700">Status <span class="text-red-500">*</span></label>
-          <select
-            id="status"
-            formControlName="status"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            [ngClass]="{'border-red-500': hasError('status', 'required')}"
-          >
-            <option *ngFor="let option of machineStatusOptions" [value]="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-          <div *ngIf="hasError('status', 'required')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('status') }}
-          </div>
-        </div>
+      <fieldset class="border p-4 rounded-md mb-6">
+        <legend class="text-lg font-semibold text-gray-800">General Information</legend>
 
-        <div class="mb-4">
-          <label for="performance" class="block text-sm font-medium text-gray-700">Performance (%) <span class="text-red-500">*</span></label>
-          <input
-            type="number"
-            id="performance"
-            formControlName="performance"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            [ngClass]="{
-              'border-red-500': hasError('performance', 'required') || hasError('performance', 'min') || hasError('performance', 'max')
-            }"
-          />
-          <div *ngIf="hasError('performance', 'required')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('performance') }}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="mb-4">
+            <label for="name" class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              [ngClass]="{'border-red-500': hasError('name', 'required')}"
+            />
+            <div *ngIf="hasError('name', 'required')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('name') }}
+            </div>
           </div>
-          <div *ngIf="hasError('performance', 'min')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('performance') }}
-          </div>
-          <div *ngIf="hasError('performance', 'max')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('performance') }}
-          </div>
-        </div>
 
-        <div class="mb-4">
-          <label for="producedParts" class="block text-sm font-medium text-gray-700">Produced Parts <span class="text-red-500">*</span></label>
-          <input
-            type="number"
-            id="producedParts"
-            formControlName="producedParts"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            [ngClass]="{
-              'border-red-500': hasError('producedParts', 'required') || hasError('producedParts', 'min')
-            }"
-          />
-          <div *ngIf="hasError('producedParts', 'required')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('producedParts') }}
+          <div class="mb-4">
+            <label for="status" class="block text-sm font-medium text-gray-700">Status <span class="text-red-500">*</span></label>
+            <select
+              id="status"
+              formControlName="status"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              [ngClass]="{'border-red-500': hasError('status', 'required')}"
+            >
+              @for(option of machineStatusOptions; track option) {
+              <option [value]="option.value">
+                {{ option.label }}
+              </option>
+              }
+            </select>
+            <div *ngIf="hasError('status', 'required')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('status') }}
+            </div>
           </div>
-          <div *ngIf="hasError('producedParts', 'min')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('producedParts') }}
+
+          <div class="mb-4">
+            <label for="performance" class="block text-sm font-medium text-gray-700">Performance (%) <span class="text-red-500">*</span></label>
+            <input
+              type="number"
+              id="performance"
+              formControlName="performance"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              [ngClass]="{
+                'border-red-500': hasError('performance', 'required') || hasError('performance', 'min') || hasError('performance', 'max')
+              }"
+            />
+            <div *ngIf="hasError('performance', 'required')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('performance') }}
+            </div>
+            <div *ngIf="hasError('performance', 'min')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('performance') }}
+            </div>
+            <div *ngIf="hasError('performance', 'max')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('performance') }}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="producedParts" class="block text-sm font-medium text-gray-700">Produced Parts <span class="text-red-500">*</span></label>
+            <input
+              type="number"
+              id="producedParts"
+              formControlName="producedParts"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              [ngClass]="{
+                'border-red-500': hasError('producedParts', 'required') || hasError('producedParts', 'min')
+              }"
+            />
+            <div *ngIf="hasError('producedParts', 'required')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('producedParts') }}
+            </div>
+            <div *ngIf="hasError('producedParts', 'min')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('producedParts') }}
+            </div>
           </div>
         </div>
+      </fieldset>
+
+      <fieldset formGroupName="production" class="border p-4 rounded-md mb-6">
+        <legend class="text-lg font-semibold text-gray-800">Production Details</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="mb-4">
+            <label for="currentProduct" class="block text-sm font-medium text-gray-700">Current Product <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="currentProduct"
+              formControlName="currentProduct"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              [ngClass]="{'border-red-500': hasError('currentProduct', 'required', 'production')}"
+            />
+            <div *ngIf="hasError('currentProduct', 'required', 'production')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('currentProduct', 'production') }}
+            </div>
+          </div>
+          <div class="mb-4">
+            <label for="partsInBatch" class="block text-sm font-medium text-gray-700">Parts in Batch <span class="text-red-500">*</span></label>
+            <input
+              type="number"
+              id="partsInBatch"
+              formControlName="partsInBatch"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              [ngClass]="{
+                'border-red-500': hasError('partsInBatch', 'required', 'production') || hasError('partsInBatch', 'min', 'production')
+              }"
+            />
+            <div *ngIf="hasError('partsInBatch', 'required', 'production')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('partsInBatch', 'production') }}
+            </div>
+            <div *ngIf="hasError('partsInBatch', 'min', 'production')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('partsInBatch', 'production') }}
+            </div>
+          </div>
+          <div class="mb-4">
+            <label for="partsCompleted" class="block text-sm font-medium text-gray-700">Parts Completed <span class="text-red-500">*</span></label>
+            <input
+              type="number"
+              id="partsCompleted"
+              formControlName="partsCompleted"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              [ngClass]="{
+                'border-red-500': hasError('partsCompleted', 'required', 'production') || hasError('partsCompleted', 'min', 'production')
+              }"
+            />
+            <div *ngIf="hasError('partsCompleted', 'required', 'production')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('partsCompleted', 'production') }}
+            </div>
+            <div *ngIf="hasError('partsCompleted', 'min', 'production')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('partsCompleted', 'production') }}
+            </div>
+          </div>
+          <div class="mb-4">
+            <label for="batchStartTime" class="block text-sm font-medium text-gray-700">Batch Start Time <span class="text-red-500">*</span></label>
+            <input
+              type="datetime-local"
+              id="batchStartTime"
+              formControlName="batchStartTime"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              [ngClass]="{'border-red-500': hasError('batchStartTime', 'required', 'production')}"
+            />
+            <div *ngIf="hasError('batchStartTime', 'required', 'production')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('batchStartTime', 'production') }}
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset formGroupName="details" class="border p-4 rounded-md mb-6">
+        <legend class="text-lg font-semibold text-gray-800">Machine Details</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="mb-4">
+            <label for="manufacturer" class="block text-sm font-medium text-gray-700">Manufacturer <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="manufacturer"
+              formControlName="manufacturer"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              [ngClass]="{'border-red-500': hasError('manufacturer', 'required', 'details')}"
+            />
+            <div *ngIf="hasError('manufacturer', 'required', 'details')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('manufacturer', 'details') }}
+            </div>
+          </div>
+          <div class="mb-4">
+            <label for="modelNumber" class="block text-sm font-medium text-gray-700">Model Number <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="modelNumber"
+              formControlName="modelNumber"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              [ngClass]="{'border-red-500': hasError('modelNumber', 'required', 'details')}"
+            />
+            <div *ngIf="hasError('modelNumber', 'required', 'details')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('modelNumber', 'details') }}
+            </div>
+          </div>
+          <div class="mb-4">
+            <label for="lastMaintenance" class="block text-sm font-medium text-gray-700">Last Maintenance <span class="text-red-500">*</span></label>
+            <input
+              type="datetime-local"
+              id="lastMaintenance"
+              formControlName="lastMaintenance"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              [ngClass]="{'border-red-500': hasError('lastMaintenance', 'required', 'details')}"
+            />
+            <div *ngIf="hasError('lastMaintenance', 'required', 'details')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('lastMaintenance', 'details') }}
+            </div>
+          </div>
+          <div class="mb-4">
+            <label for="location" class="block text-sm font-medium text-gray-700">Location <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="location"
+              formControlName="location"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              [ngClass]="{'border-red-500': hasError('location', 'required', 'details')}"
+            />
+            <div *ngIf="hasError('location', 'required', 'details')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('location', 'details') }}
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="flex justify-end space-x-4">
+        <button
+          type="button"
+          (click)="goBack()"
+          class="px-6 py-2 border border-gray-300 text-gray-700 rounded-md shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          [disabled]="!machineForm.valid"
+          class="px-6 py-2 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
+        >
+          {{ isEditMode() ? 'Update Machine' : 'Add Machine' }}
+        </button>
       </div>
-    </fieldset>
-
-    <fieldset formGroupName="production" class="border p-4 rounded-md mb-6">
-      <legend class="text-lg font-semibold text-gray-800">Production Details</legend>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="mb-4">
-          <label for="currentProduct" class="block text-sm font-medium text-gray-700">Current Product <span class="text-red-500">*</span></label>
-          <input
-            type="text"
-            id="currentProduct"
-            formControlName="currentProduct"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            [ngClass]="{'border-red-500': hasError('currentProduct', 'required', 'production')}"
-          />
-          <div *ngIf="hasError('currentProduct', 'required', 'production')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('currentProduct', 'production') }}
-          </div>
-        </div>
-        <div class="mb-4">
-          <label for="partsInBatch" class="block text-sm font-medium text-gray-700">Parts in Batch <span class="text-red-500">*</span></label>
-          <input
-            type="number"
-            id="partsInBatch"
-            formControlName="partsInBatch"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            [ngClass]="{
-              'border-red-500': hasError('partsInBatch', 'required', 'production') || hasError('partsInBatch', 'min', 'production')
-            }"
-          />
-          <div *ngIf="hasError('partsInBatch', 'required', 'production')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('partsInBatch', 'production') }}
-          </div>
-          <div *ngIf="hasError('partsInBatch', 'min', 'production')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('partsInBatch', 'production') }}
-          </div>
-        </div>
-        <div class="mb-4">
-          <label for="partsCompleted" class="block text-sm font-medium text-gray-700">Parts Completed <span class="text-red-500">*</span></label>
-          <input
-            type="number"
-            id="partsCompleted"
-            formControlName="partsCompleted"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            [ngClass]="{
-              'border-red-500': hasError('partsCompleted', 'required', 'production') || hasError('partsCompleted', 'min', 'production')
-            }"
-          />
-          <div *ngIf="hasError('partsCompleted', 'required', 'production')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('partsCompleted', 'production') }}
-          </div>
-          <div *ngIf="hasError('partsCompleted', 'min', 'production')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('partsCompleted', 'production') }}
-          </div>
-        </div>
-        <div class="mb-4">
-          <label for="batchStartTime" class="block text-sm font-medium text-gray-700">Batch Start Time <span class="text-red-500">*</span></label>
-          <input
-            type="datetime-local"
-            id="batchStartTime"
-            formControlName="batchStartTime"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            [ngClass]="{'border-red-500': hasError('batchStartTime', 'required', 'production')}"
-          />
-          <div *ngIf="hasError('batchStartTime', 'required', 'production')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('batchStartTime', 'production') }}
-          </div>
-        </div>
-      </div>
-    </fieldset>
-
-    <fieldset formGroupName="details" class="border p-4 rounded-md mb-6">
-      <legend class="text-lg font-semibold text-gray-800">Machine Details</legend>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="mb-4">
-          <label for="manufacturer" class="block text-sm font-medium text-gray-700">Manufacturer <span class="text-red-500">*</span></label>
-          <input
-            type="text"
-            id="manufacturer"
-            formControlName="manufacturer"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            [ngClass]="{'border-red-500': hasError('manufacturer', 'required', 'details')}"
-          />
-          <div *ngIf="hasError('manufacturer', 'required', 'details')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('manufacturer', 'details') }}
-          </div>
-        </div>
-        <div class="mb-4">
-          <label for="modelNumber" class="block text-sm font-medium text-gray-700">Model Number <span class="text-red-500">*</span></label>
-          <input
-            type="text"
-            id="modelNumber"
-            formControlName="modelNumber"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            [ngClass]="{'border-red-500': hasError('modelNumber', 'required', 'details')}"
-          />
-          <div *ngIf="hasError('modelNumber', 'required', 'details')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('modelNumber', 'details') }}
-          </div>
-        </div>
-        <div class="mb-4">
-          <label for="lastMaintenance" class="block text-sm font-medium text-gray-700">Last Maintenance <span class="text-red-500">*</span></label>
-          <input
-            type="datetime-local"
-            id="lastMaintenance"
-            formControlName="lastMaintenance"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            [ngClass]="{'border-red-500': hasError('lastMaintenance', 'required', 'details')}"
-          />
-          <div *ngIf="hasError('lastMaintenance', 'required', 'details')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('lastMaintenance', 'details') }}
-          </div>
-        </div>
-        <div class="mb-4">
-          <label for="location" class="block text-sm font-medium text-gray-700">Location <span class="text-red-500">*</span></label>
-          <input
-            type="text"
-            id="location"
-            formControlName="location"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            [ngClass]="{'border-red-500': hasError('location', 'required', 'details')}"
-          />
-          <div *ngIf="hasError('location', 'required', 'details')" class="text-red-500 text-xs mt-1">
-            {{ getErrorMessage('location', 'details') }}
-          </div>
-        </div>
-      </div>
-    </fieldset>
-
-    <div class="flex justify-end space-x-4">
-      <button
-        type="button"
-        (click)="goBack()"
-        class="px-6 py-2 border border-gray-300 text-gray-700 rounded-md shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-      >
-        Cancel
-      </button>
-      <button
-        type="submit"
-        [disabled]="!machineForm.valid"
-        class="px-6 py-2 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
-      >
-        {{ isEditMode() ? 'Update Machine' : 'Add Machine' }}
-      </button>
-    </div>
-  </form>
+    </form>
+  }
 </div>

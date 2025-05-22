@@ -1,82 +1,93 @@
 <div class="container mx-auto p-4">
-  <h2 class="text-3xl font-bold mb-6 text-gray-800">Machine Overview</h2>
+  @if(isLoading()){
+    <div class="flex justify-center items-center py-8">
+      <app-spinner></app-spinner>
+    </div>
+  }
+  @else{
+    <h2 class="text-3xl font-bold mb-6 text-gray-800">Machine Overview</h2>
+    
+    <div class="flex justify-between items-center mb-4">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="currentPage.set(1)"
+        placeholder="Search machines..."
+        class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 w-1/3"
+      />
+      <button
+        (click)="addMachine()"
+        class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        Add New Machine
+      </button>
+    </div>
 
-  <div class="flex justify-between items-center mb-4">
-    <input
-      type="text"
-      [(ngModel)]="searchTerm"
-      (ngModelChange)="currentPage.set(1)"
-      placeholder="Search machines..."
-      class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 w-1/3"
-    />
-    <button
-      (click)="addMachine()"
-      class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-    >
-      Add New Machine
-    </button>
-  </div>
+    <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produced Parts</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          @for(machine of paginatedMachines(); track machine.id) {
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <a [routerLink]="['/machines', machine.id]" class="text-blue-600 hover:underline">{{ machine.id | slice:0:8 }}...</a>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ machine.name }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <span [ngClass]="{
+                  'px-2 inline-flex text-xs leading-5 font-semibold rounded-full': true,
+                  'bg-green-100 text-green-800': machine.status === 1,
+                  'bg-red-100 text-red-800': machine.status === 2,
+                  'bg-gray-100 text-gray-800': machine.status === 0,
+                  'bg-yellow-100 text-yellow-800': machine.status === 3
+                }">
+                  {{ MachineStatus[machine.status] }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ machine.performance }}%</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ machine.producedParts }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ machine.details.location }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button (click)="editMachine(machine.id)" class="text-indigo-600 hover:text-indigo-900 mr-4">Edit</button>
+                <button (click)="deleteMachine(machine.id)" class="text-red-600 hover:text-red-900">Delete</button>
+              </td>
+            </tr>
+          }
+          @empty {
+            <tr>
+              <td colspan="7" class="px-6 py-4 text-center text-gray-500">No machines found.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
 
-  <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produced Parts</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-        </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-        <tr *ngFor="let machine of paginatedMachines(); trackBy: trackByMachineId" class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-            <a [routerLink]="['/machines', machine.id]" class="text-blue-600 hover:underline">{{ machine.id | slice:0:8 }}...</a>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ machine.name }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm">
-            <span [ngClass]="{
-              'px-2 inline-flex text-xs leading-5 font-semibold rounded-full': true,
-              'bg-green-100 text-green-800': machine.status === 1,
-              'bg-red-100 text-red-800': machine.status === 2,
-              'bg-gray-100 text-gray-800': machine.status === 0,
-              'bg-yellow-100 text-yellow-800': machine.status === 3
-            }">
-              {{ MachineStatus[machine.status] }}
-            </span>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ machine.performance }}%</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ machine.producedParts }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ machine.details.location }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-            <button (click)="editMachine(machine.id)" class="text-indigo-600 hover:text-indigo-900 mr-4">Edit</button>
-            <button (click)="deleteMachine(machine.id)" class="text-red-600 hover:text-red-900">Delete</button>
-          </td>
-        </tr>
-        <tr *ngIf="paginatedMachines().length === 0">
-          <td colspan="7" class="px-6 py-4 text-center text-gray-500">No machines found.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="flex justify-center items-center mt-6">
-    <button
-      (click)="goToPage(currentPage() - 1)"
-      [disabled]="currentPage() === 1"
-      class="px-4 py-2 mr-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50"
-    >
-      Previous
-    </button>
-    <span class="text-gray-700">Page {{ currentPage() }} of {{ totalPages() }}</span>
-    <button
-      (click)="goToPage(currentPage() + 1)"
-      [disabled]="currentPage() === totalPages()"
-      class="px-4 py-2 ml-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50"
-    >
-      Next
-    </button>
-  </div>
+    <div class="flex justify-center items-center mt-6">
+      <button
+        (click)="goToPage(currentPage() - 1)"
+        [disabled]="currentPage() === 1"
+        class="px-4 py-2 mr-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50"
+      >
+        Previous
+      </button>
+      <span class="text-gray-700">Page {{ currentPage() }} of {{ totalPages() }}</span>
+      <button
+        (click)="goToPage(currentPage() + 1)"
+        [disabled]="currentPage() === totalPages()"
+        class="px-4 py-2 ml-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50"
+      >
+        Next
+      </button>
+    </div>
+  }
 </div>
