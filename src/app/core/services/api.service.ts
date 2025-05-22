@@ -47,14 +47,23 @@ export class ApiService {
     const url = `${this.apiUrl}/${id}`;
     return this.http.put<Machine>(url, machine).pipe(
       tap(updateMachine => {
-        this.machines.update(machines => machines.map(m => m.id === updateMachine.id ? updateMachine : m));
+        this._machines.update(machines => machines.map(m => m.id === updateMachine.id ? updateMachine : m));
       }),
       catchError(this.handleError)
     );
   }
 
   // delete an existing machine
-  deleteMachine() {}
+  deleteMachine(id: string): Observable<void> {
+    const url = `${this.apiUrl}/${id}`;
+    return this.http.delete<void>(url).pipe(
+      tap(() => { 
+          this._machines.update(machines => machines.filter(m => m.id !== id))
+        }
+      ),
+      catchError(this.handleError)
+    );
+  }
 
   // function to handle all errors
   private handleError(error: HttpErrorResponse) {
